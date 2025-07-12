@@ -1,0 +1,53 @@
+# DropiLuxury Telegram Bot Setup (v1)
+# Core: Python + python-telegram-bot + basic GPT response support (optional)
+
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler
+
+# Token
+BOT_TOKEN = "7897630881:AAFvo-RIQjbpJsfOVvo39QJdsmR6rMbQT5Q"
+
+# Start command
+def start(update: Update, context: CallbackContext):
+    keyboard = [
+        [InlineKeyboardButton("🏥 Saúde", callback_data='saude')],
+        [InlineKeyboardButton("📈 Mercado Financeiro", callback_data='financeiro')],
+        [InlineKeyboardButton("🏫 Formação (OPIFORM)", callback_data='formacao')],
+        [InlineKeyboardButton("🛍 Loja Virtual", callback_data='loja')],
+        [InlineKeyboardButton("🕋 Espaço Islâmico", callback_data='islamico')],
+        [InlineKeyboardButton("🤝 Parcerias & Consultoria", callback_data='parcerias')],
+        [InlineKeyboardButton("🌐 Language / Idioma", callback_data='idioma')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text("Bem-vindo ao DropiLuxury\u2122! Escolha uma op\u00e7\u00e3o:", reply_markup=reply_markup)
+
+# Callback handler
+def button(update: Update, context: CallbackContext):
+    query = update.callback_query
+    data = query.data
+    query.answer()
+
+    responses = {
+        "saude": "\ud83c\udfe5 *Área da Saúde*\n- Triagem médica com IA\n- Educação em saúde sexual e reprodutiva\n- ITS/HIV\n- Saúde mental e espiritual",
+        "financeiro": "\ud83d\udcc8 *Mercado Financeiro*\n- Bots de trading\n- Educação financeira\n- Links para corretoras",
+        "formacao": "\ud83c\udfeb *Formação Profissional* (OPIFORM)\n- Cursos\n- Certificações\n- Trilhas de carreira",
+        "loja": "\ud83d\uded2 *Loja Virtual*\n- Livros\n- Planos Dropi Bot\n- Pagamentos via Cartão/Cripto",
+        "islamico": "\ud83d\ude4f *Espaço Islâmico*\n- Dúvidas\n- Apoio\n- Integração comunitária",
+        "parcerias": "\ud83d\udcce *Parcerias & Consultorias*\n- Desenvolvimento de Bots\n- Consultorias em Saúde Pública e Finanças\n- Encaminhamento médico internacional",
+        "idioma": "\ud83c\udf10 Language coming soon: PT / EN / FR"
+    }
+
+    response = responses.get(data, "Em construção...")
+    query.edit_message_text(text=response, parse_mode='Markdown')
+
+# Main
+if __name__ == '__main__':
+    updater = Updater(BOT_TOKEN)
+    dp = updater.dispatcher
+
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CallbackQueryHandler(button))
+
+    print("Bot DropiLuxury iniciado...")
+    updater.start_polling()
+    updater.idle()
